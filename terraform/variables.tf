@@ -6,3 +6,8 @@ variable "image-url" {
   default = "893655109199.dkr.ecr.us-east-2.amazonaws.com/test:latest"
   type    = string
 }
+
+variable "region" {
+  default = "us-east-1"
+  type    = string
+}
