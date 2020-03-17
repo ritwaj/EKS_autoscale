@@ -1,5 +1,5 @@
 resource "aws_iam_role" "test-role" {
-  name = "test-role"
+  name = "${var.cluster-name}-role"
 
   assume_role_policy = <<POLICY
 {
@@ -28,7 +28,7 @@ resource "aws_iam_role_policy_attachment" "test-role-AmazonEKSServicePolicy" {
 }
 
 resource "aws_security_group" "test-sg" {
-  name        = "test-sg"
+  name        = "${var.cluster-name}-sg"
   description = "Cluster communication with worker nodes"
   vpc_id      = aws_vpc.test-vpc.id
 
@@ -40,7 +40,7 @@ resource "aws_security_group" "test-sg" {
   }
 
   tags = {
-    Name = "test-sg"
+    Name = "${var.cluster-name}-sg"
   }
 }
 

@@ -1,1 +1,1 @@
-while true; do wget -q -O- http://test-svc.default.svc.cluster.local; done
+while true; do wget -q -O- http://$cluster-svc.default.svc.cluster.local; done

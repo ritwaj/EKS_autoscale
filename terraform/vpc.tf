@@ -5,7 +5,7 @@ resource "aws_vpc" "test-vpc" {
   enable_dns_hostnames = true
 
   tags = map(
-    "Name", "test-node",
+    "Name", "${var.cluster-name}-node",
     "kubernetes.io/cluster/${var.cluster-name}", "shared",
   )
 }
@@ -19,7 +19,7 @@ resource "aws_subnet" "test-subnet" {
   vpc_id            = aws_vpc.test-vpc.id
 
   tags = map(
-    "Name", "test-node",
+    "Name", "${var.cluster-name}-node",
     "kubernetes.io/cluster/${var.cluster-name}", "shared",
   )
 }
@@ -29,7 +29,7 @@ resource "aws_internet_gateway" "test-ig" {
   vpc_id = aws_vpc.test-vpc.id
 
   tags = {
-    Name = "test"
+    Name = "${var.cluster-name}"
   }
 }
 

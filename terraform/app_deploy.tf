@@ -1,8 +1,8 @@
 resource "kubernetes_deployment" "test-deploy" {
   metadata {
-    name = "test-deploy"
+    name = "${var.cluster-name}-deploy"
     labels = {
-      App = "test-app"
+      App = "${var.cluster-name}-app"
     }
   }
 
@@ -10,19 +10,19 @@ resource "kubernetes_deployment" "test-deploy" {
     replicas = 1
     selector {
       match_labels = {
-        App = "test-app"
+        App = "${var.cluster-name}-app"
       }
     }
     template {
       metadata {
         labels = {
-          App = "test-app"
+          App = "${var.cluster-name}-app"
         }
       }
       spec {
         container {
-          image = "893655109199.dkr.ecr.us-east-2.amazonaws.com/test:latest"
-          name  = "test-container"
+          image = var.image-url
+          name  = "${var.cluster-name}-container"
 
           port {
             container_port = 80
@@ -48,7 +48,7 @@ resource "kubernetes_deployment" "test-deploy" {
 
 resource "kubernetes_service" "test-svc" {
   metadata {
-    name = "test-svc"
+    name = "${var.cluster-name}-svc"
   }
   spec {
     selector = {
@@ -66,13 +66,13 @@ resource "kubernetes_service" "test-svc" {
 
 resource "null_resource" "create_hpa" {
   provisioner "local-exec" {
-    command = "kubectl autoscale deployment test-deploy --cpu-percent=50 --min=1 --max=10"
+    command = "kubectl autoscale deployment ${var.cluster-name}-deploy --cpu-percent=50 --min=1 --max=10"
   }
   depends_on = [kubernetes_deployment.test-deploy,helm_release.metrics-server]
 }
 #resource "kubernetes_horizontal_pod_autoscaler" "test-hpa" {
 #  metadata {
-#    name = "test-hpa"
+#    name = "${var.cluster-name}-hpa"
 #  }
 #  spec {
 #    max_replicas = 10

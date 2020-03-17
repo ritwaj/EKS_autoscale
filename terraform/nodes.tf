@@ -1,5 +1,5 @@
 resource "aws_iam_role" "test-role-node" {
-  name = "test-role-node"
+  name = "${var.cluster-name}-role-node"
 
   assume_role_policy = <<POLICY
 {
@@ -18,7 +18,7 @@ POLICY
 }
 
 resource "aws_iam_role_policy" "test_policy" {
-  name = "test_policy"
+  name = "${var.cluster-name}_policy"
   role = aws_iam_role.test-role-node.id
 
   policy = <<-EOF
@@ -57,7 +57,7 @@ resource "aws_iam_role_policy_attachment" "test-node-AmazonEC2ContainerRegistryR
 }
 
 resource "aws_security_group" "test-node-sg" {
-  name        = "test-node-sg"
+  name        = "${var.cluster-name}-node-sg"
   description = "Cluster communication with worker nodes"
   vpc_id      = aws_vpc.test-vpc.id
 
@@ -69,7 +69,7 @@ resource "aws_security_group" "test-node-sg" {
   }
 
   tags = {
-    Name = "test-node-sg"
+    Name = "${var.cluster-name}-node-sg"
   }
 }
 
@@ -106,7 +106,7 @@ resource "aws_eks_node_group" "worker-group" {
   }
 
   tags = {
-    "k8s.io/cluster-autoscaler/test" = "",
+    "k8s.io/cluster-autoscaler/${var.cluster-name}" = "",
     "k8s.io/cluster-autoscaler/enabled" = ""
   }
 

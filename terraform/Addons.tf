@@ -5,7 +5,7 @@ data "helm_repository" "stable" {
 
 resource "null_resource" "kubectl_init" {
   provisioner "local-exec" {
-    command = "aws eks update-kubeconfig --name test"
+    command = "aws eks update-kubeconfig --name ${var.cluster-name}"
   }
   depends_on = [aws_eks_node_group.worker-group]
 }
@@ -27,30 +27,6 @@ resource "helm_release" "dashboard" {
   depends_on = [helm_release.metrics-server]
 }
 
-resource "kubernetes_service_account" "dashboard-sa" {
-  metadata {
-    name = "eks-admin"
-    namespace = "kube-system"
-  }
-  depends_on = [null_resource.kubectl_init]
-}
-
-resource "kubernetes_cluster_role_binding" "dashboard_crb" {
-  metadata {
-    name = "eks-admin"
-  }
-  role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind      = "ClusterRole"
-    name      = "cluster-admin"
-  }
-  subject {
-    kind      = "ServiceAccount"
-    name      = "eks-admin"
-    namespace = "kube-system"
-  }
-  depends_on = [kubernetes_cluster_role_binding.dashboard_crb]
-}
 
 resource "helm_release" "cluster-autoscaler" {
   name       = "cluster-autoscaler"
@@ -60,7 +36,7 @@ resource "helm_release" "cluster-autoscaler" {
 
   set {
     name  = "autoDiscovery.clusterName"
-    value = "test"
+    value = var.cluster-name
   }
 
 set {
@@ -79,4 +55,30 @@ set {
   }
 
   depends_on = [helm_release.metrics-server]
+}
+
+
+resource "kubernetes_service_account" "dashboard-sa" {
+  metadata {
+    name = "eks-admin"
+    namespace = "kube-system"
+  }
+  depends_on = [helm_release.cluster-autoscaler]
+}
+
+resource "kubernetes_cluster_role_binding" "dashboard_crb" {
+  metadata {
+    name = "eks-admin"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "cluster-admin"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "eks-admin"
+    namespace = "kube-system"
+  }
+  depends_on = [kubernetes_service_account.dashboard-sa]
 }
