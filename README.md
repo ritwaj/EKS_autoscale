@@ -5,7 +5,7 @@
 **Prerequisites**
 Install and login to aws cli
 Intall kubectl, helm and docker<br>
-**Note: This is developed to run on a windows machine**
+**Note: This ishas only been test on a windows machine but should on other operating systems as well which Terraform supports**
 
 **Steps:**
 1. Got the docker folder, build a docker image and push to ECR
@@ -33,4 +33,7 @@ Intall kubectl, helm and docker<br>
 8. Goto drainnode and run *terraform init* and *terraform apply*
   - This will get nodes from Kubernetes cluster using *kubectl get nodes* and drain the first node from the list which will cause all pods to be evicted from the node and no further pods to be scheduled. 
   - Run *kubectl uncordon <node-name>* to return the node to its nrmal state
-  
+
+**References:**
+- [Terraform EKS intro](https://learn.hashicorp.com/terraform/aws/eks-intro)
+- [Kubernetes HPA](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/)
