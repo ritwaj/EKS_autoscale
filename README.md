@@ -33,6 +33,15 @@ Intall kubectl, helm and docker<br>
 8. Goto drainnode and run *terraform init* and *terraform apply*
   - This will get nodes from Kubernetes cluster using *kubectl get nodes* and drain the first node from the list which will cause all pods to be evicted from the node and no further pods to be scheduled. 
   - Run *kubectl uncordon <node-name>* to return the node to its nrmal state
+  
+**Variables**
+  - terraform/variables.tf:
+    - *region:* the AWS region to use
+    - *image-url:* ECR  image URL for the docker image of the website
+    - *cluster-name:* Cluster name and prefix for all other resources
+  - loadgenerator/variables.tf
+    - *image-url:* ECR  image URL for the docker image of loadgenerator
+    - *cluster-name:* Prefix for service created should same as terraform/variables.tf(eg: <test>_svc)
 
 **References:**
 - [Terraform EKS intro](https://learn.hashicorp.com/terraform/aws/eks-intro)
